@@ -1,1 +1,22 @@
-
+{
+  "75104": [
+    {
+      "date": "2025-12-25",
+      "no2": "Bon",
+      "o3": "Bon",
+      "pm10": "Bon",
+      "pm25": "Bon",
+      "so2": "Bon",
+      "indice": "Bon"
+    },
+    {
+      "date": "2025-12-26",
+      "no2": "Bon",
+      "o3": "Bon",
+      "pm10": "Bon",
+      "pm25": "Moyen",
+      "so2": "Bon",
+      "indice": "Moyen"
+    }
+  ]
+}
