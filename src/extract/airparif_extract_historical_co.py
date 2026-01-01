@@ -5,7 +5,7 @@ import requests
 ITEMS = {
     2023: "d0eca32a84374a1e9a3fe1978a6fc345",
     2024: "f11063a559eb48ab9d15644091b72565",
-    2025: "37efd2eeb29047e1bded9943bf96d021",
+    2025: "de0a22cc480d4604b1c25c3977dae36b",
 }
 
 RAW_PATH = "data/raw/historical/co"
