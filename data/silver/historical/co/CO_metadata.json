@@ -1,1 +1,44 @@
-
+{
+  "2023": {
+    "A1_CO": {
+      "station_code": "A1",
+      "station_name": "Autoroute A1 - Saint-Denis",
+      "substance": "CO",
+      "unit": "mg/m3"
+    },
+    "PA01H_CO": {
+      "station_code": "PA01H",
+      "station_name": "PARIS 1er Les Halles",
+      "substance": "CO",
+      "unit": "mg/m3"
+    }
+  },
+  "2024": {
+    "A1_CO": {
+      "station_code": "A1",
+      "station_name": "Autoroute A1 - Saint-Denis",
+      "substance": "CO",
+      "unit": "mg/m3"
+    },
+    "PA01H_CO": {
+      "station_code": "PA01H",
+      "station_name": "PARIS 1er Les Halles",
+      "substance": "CO",
+      "unit": "mg/m3"
+    }
+  },
+  "2025": {
+    "A1_CO": {
+      "station_code": "A1",
+      "station_name": "Autoroute A1 - Saint-Denis",
+      "substance": "CO",
+      "unit": "mg/m3"
+    },
+    "PA01H_CO": {
+      "station_code": "PA01H",
+      "station_name": "PARIS 1er Les Halles",
+      "substance": "CO",
+      "unit": "mg/m3"
+    }
+  }
+}
