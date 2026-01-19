@@ -5,7 +5,7 @@ import requests
 ITEMS = {
     2023: "993a489447504386b39ff9afaf91ed5d",
     2024: "4408ee1f75ca4b5c88d1b1949e4bc78c",
-    2025: "9599dabcc1ad45e1bd35061587636964",
+    2025: "936e2b9bad644e94b550fb6f31b766c3",
 }
 
 RAW_PATH = "data/raw/historical/nox"
