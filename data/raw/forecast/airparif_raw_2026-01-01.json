@@ -1,0 +1,22 @@
+{
+  "75104": [
+    {
+      "date": "2026-01-01",
+      "no2": "Moyen",
+      "o3": "Moyen",
+      "pm10": "Bon",
+      "pm25": "Moyen",
+      "so2": "Bon",
+      "indice": "Moyen"
+    },
+    {
+      "date": "2026-01-02",
+      "no2": "Moyen",
+      "o3": "Moyen",
+      "pm10": "Bon",
+      "pm25": "Moyen",
+      "so2": "Bon",
+      "indice": "Moyen"
+    }
+  ]
+}
