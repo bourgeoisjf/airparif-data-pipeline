@@ -1,78 +1,86 @@
 import os
 import pandas as pd
 import json
-import os
 
-# Project root
+# 📌 Répertoire racine du projet
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# 📂 Chemins des données
+CHEMIN_BRONZE = os.path.join(BASE_DIR, "data/raw/historical/co")
+CHEMIN_SILVER = os.path.join(BASE_DIR, "data/silver/historical/co")
+os.makedirs(CHEMIN_SILVER, exist_ok=True)
 
-# Paths
-RAW_PATH = os.path.join(BASE_DIR, "data/raw/historical/co")
-SILVER_PATH = os.path.join(BASE_DIR, "data/silver/historical/co")
-os.makedirs(SILVER_PATH, exist_ok=True)
+# 📘 Dictionnaire pour stocker les métadonnées
+metadonnees = {}
 
+# 🔁 Traitement de chaque fichier CSV (un par année)
+for nom_fichier in os.listdir(CHEMIN_BRONZE):
+    if nom_fichier.endswith(".csv"):
+        annee = nom_fichier.split("_")[0]
+        fichier_brut = os.path.join(CHEMIN_BRONZE, nom_fichier)
 
-# Metadata dictionary
-metadata_dict = {}
+        print(f"🔹 Traitement du fichier : {fichier_brut}")
 
-# Process each year CSV
-for file_name in os.listdir(RAW_PATH):
-    if file_name.endswith(".csv"):
-        year = file_name.split("_")[0]
-        raw_file = os.path.join(RAW_PATH, file_name)
-        print(f"🔹 Processing {raw_file}...")
+        # 📖 Lecture du fichier brut ligne par ligne (pour extraire les métadonnées)
+        with open(fichier_brut, "r", encoding="utf-8") as f:
+            lignes = f.readlines()
 
-        # Read raw CSV, skip metadata lines later
-        with open(raw_file, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        # 🧾 Extraction des métadonnées depuis les lignes d’en-tête
+        codes_stations = lignes[2].strip().split(",")[1:]
+        noms_stations = lignes[1].strip().split(",")[1:]
+        substances = lignes[4].strip().split(",")[1:]
+        unites = lignes[5].strip().split(",")[1:]
 
-        # Extract metadata
-        station_codes = lines[2].strip().split(",")[1:]
-        station_names = lines[1].strip().split(",")[1:]
-        substances = lines[4].strip().split(",")[1:]
-        units = lines[5].strip().split(",")[1:]
-
-        # Build column names for Silver
-        silver_columns = [
-            f"{code}_{substance}" for code, substance in zip(station_codes, substances)
+        # 🏷️ Construction des noms de colonnes pour la couche Silver
+        colonnes_silver = [
+            f"{code}_{substance}" for code, substance in zip(codes_stations, substances)
         ]
-        metadata_dict[year] = {
-            col: {
-                "station_code": code,
-                "station_name": name,
-                "substance": sub,
-                "unit": unit,
+
+        # 📘 Sauvegarde des métadonnées par année
+        metadonnees[annee] = {
+            colonne: {
+                "code_station": code,
+                "nom_station": nom,
+                "polluant": substance,
+                "unite": unite,
             }
-            for col, code, name, sub, unit in zip(
-                silver_columns, station_codes, station_names, substances, units
+            for colonne, code, nom, substance, unite in zip(
+                colonnes_silver,
+                codes_stations,
+                noms_stations,
+                substances,
+                unites,
             )
         }
 
-        # Read actual data (skip first 6 lines)
-        data = pd.read_csv(raw_file, skiprows=6)
+        # 📊 Lecture des données de mesures (on ignore les 6 premières lignes)
+        donnees = pd.read_csv(fichier_brut, skiprows=6)
 
-        # Rename columns
-        rename_dict = {
-            data.columns[i + 1]: silver_columns[i] for i in range(len(silver_columns))
+        # 🔄 Renommage des colonnes de mesure
+        dictionnaire_renommage = {
+            donnees.columns[i + 1]: colonnes_silver[i]
+            for i in range(len(colonnes_silver))
         }
-        data.rename(columns=rename_dict, inplace=True)
+        donnees.rename(columns=dictionnaire_renommage, inplace=True)
 
-        # Convert datetime
-        data[data.columns[0]] = pd.to_datetime(data[data.columns[0]], errors="coerce")
-        data.rename(columns={data.columns[0]: "datetime"}, inplace=True)
+        # 🕒 Conversion de la colonne datetime
+        donnees[donnees.columns[0]] = pd.to_datetime(
+            donnees[donnees.columns[0]], errors="coerce"
+        )
+        donnees.rename(columns={donnees.columns[0]: "datetime"}, inplace=True)
 
-        # Convert measurement columns to float
-        for col in silver_columns:
-            data[col] = pd.to_numeric(data[col], errors="coerce")
+        # 🔢 Conversion des valeurs de mesure en float
+        for colonne in colonnes_silver:
+            donnees[colonne] = pd.to_numeric(donnees[colonne], errors="coerce")
 
-        # Save cleaned Silver CSV
-        silver_file = os.path.join(SILVER_PATH, f"{year}_CO_silver.csv")
-        data.to_csv(silver_file, index=False)
-        print(f"✅ Saved Silver CSV: {silver_file}")
+        # 💾 Sauvegarde du fichier Silver nettoyé
+        fichier_silver = os.path.join(CHEMIN_SILVER, f"{annee}_CO_silver.csv")
+        donnees.to_csv(fichier_silver, index=False)
+        print(f"✅ Fichier Silver enregistré : {fichier_silver}")
 
-# Save metadata to JSON
-metadata_file = os.path.join(SILVER_PATH, "CO_metadata.json")
-with open(metadata_file, "w", encoding="utf-8") as f:
-    json.dump(metadata_dict, f, ensure_ascii=False, indent=2)
-print(f"✅ Saved metadata JSON: {metadata_file}")
+# 💾 Sauvegarde des métadonnées globales au format JSON
+fichier_metadonnees = os.path.join(CHEMIN_SILVER, "CO_metadata.json")
+with open(fichier_metadonnees, "w", encoding="utf-8") as f:
+    json.dump(metadonnees, f, ensure_ascii=False, indent=2)
+
+print(f"✅ Métadonnées enregistrées : {fichier_metadonnees}")
